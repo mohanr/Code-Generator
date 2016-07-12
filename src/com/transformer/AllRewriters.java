@@ -177,9 +177,6 @@ public class AllRewriters extends JavaBaseListener {
    }
 
     /**
-     * There is extra code marked by comments which seems
-     * to  add only the method modifier which is not part of the
-     * MethodDeclarationContext.
      * TODO 1. Debug to understand 2. Find a better way to print method when you enter it.
      * @param ctx
      */
