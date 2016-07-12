@@ -1,0 +1,6 @@
+
+oldImports :
+    - org.apache.struts
+newImports :
+    - org.spring
+classIdentifier : LoginController
