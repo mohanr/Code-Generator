@@ -24,7 +24,7 @@ import java.util.stream.Stream;
  * Created by Mohan Radhakrishnan on 6/15/2016.
  *
  */
-public class AllRewriters extends JavaBaseListener {
+public class Regenerator extends JavaBaseListener {
 
     private final CodePrinter printer;
 
@@ -33,8 +33,6 @@ public class AllRewriters extends JavaBaseListener {
         YamlConfiguration yamlConfiguration;
 
         TransformerRuleConfiguration transformerRuleConfiguration;
-
-        private static final String NEW_CLASS_IDENTIFIER = "LoginController";
 
         /*
         Accumulators
@@ -47,8 +45,6 @@ public class AllRewriters extends JavaBaseListener {
         ConcurrentLinkedQueue<List<Token>> hiddenWhiteSpaceTokens = new ConcurrentLinkedQueue<>();
         ConcurrentLinkedQueue<List<Token>> hiddenMethodCommentTokens = new ConcurrentLinkedQueue<>();
 
-    ;
-
         public List<Interval> getIntervals() {
             return intervals;
         }
@@ -60,7 +56,7 @@ public class AllRewriters extends JavaBaseListener {
          */
         List<Interval> methodIntervals = new ArrayList<Interval>();;
 
-        public AllRewriters(TokenStream tokens) throws FileNotFoundException {
+        public Regenerator(TokenStream tokens) throws FileNotFoundException {
 
             this.tokens = tokens;
 
@@ -115,8 +111,19 @@ public class AllRewriters extends JavaBaseListener {
 
         @Override
         public void enterClassDeclaration(JavaParser.ClassDeclarationContext ctx) {
+
             printer.write( intervals );
             printer.writeList(importFilter );
+
+            /* Write new import statements *//* TODO Optional is used properly ? */
+            if( transformerRuleConfiguration.getOptionalNewImports().isPresent() ) {
+                List<String> newImports = new ArrayList<>();
+                transformerRuleConfiguration.
+                        getOptionalNewImports().get().stream()
+                        .map(p -> "import " + p + ";")
+                        .collect(Collectors.toCollection(() -> newImports));
+                printer.writeList( newImports );
+            }
             ParseTree pt = ctx.getChild(1);
             /*
                 The class name is changed by a visitor because
@@ -177,7 +184,9 @@ public class AllRewriters extends JavaBaseListener {
    }
 
     /**
-     * TODO 1. Debug to understand 2. Find a better way to print method when you enter it.
+     * TODO
+     * 1. Debug to understand
+     * 2. Find a better way to print method when you enter it.
      * @param ctx
      */
     @Override

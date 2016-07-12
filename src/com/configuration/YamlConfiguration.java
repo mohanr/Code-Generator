@@ -27,6 +27,7 @@ public class YamlConfiguration {
          Constructor constructor = new Constructor(TransformerRuleConfiguration.class);
          TypeDescription ruleDescription = new TypeDescription(TransformerRuleConfiguration.class);
          ruleDescription.putListPropertyType("oldImports", String.class);
+         ruleDescription.putListPropertyType("newImports", String.class);
          ruleDescription.putListPropertyType("classIdentifier ", String.class);
          constructor.addTypeDescription( ruleDescription );
          Yaml yaml = new Yaml(constructor);

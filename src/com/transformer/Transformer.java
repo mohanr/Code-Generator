@@ -1,14 +1,9 @@
 package com.transformer;
 
-import com.configuration.YamlConfiguration;
-import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.DOTTreeGenerator;
 import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import test.JavaBaseVisitor;
 import test.JavaLexer;
 import test.JavaParser;
 
@@ -35,7 +30,7 @@ public class Transformer  {
 
         /* Remove Struts import declarations*/
         /* Change class name to something else */
-        AllRewriters rewriters = new AllRewriters( stream );
+        Regenerator rewriters = new Regenerator( stream );
         jp.addParseListener( rewriters );
 
         ParseTreeWalker walker = new ParseTreeWalker();

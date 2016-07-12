@@ -3,6 +3,7 @@ package com.configuration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by Mohan Radhakrishnan on 7/11/2016.
@@ -30,10 +31,20 @@ public class TransformerRuleConfiguration {
         }
 
         public List<String> getNewImports() {
+
             return newImports;
         }
 
-        public void setNewImports(List<String> bewimports) {
+        /*
+            It is unfortunate that Snakeyaml does not understand Java 8
+            @see https://bitbucket.org/asomov/snakeyaml/issues/310/support-bean-properties-of-type
+         */
+        public Optional<List<String>> getOptionalNewImports() {
+
+            return Optional.<List<String>>ofNullable(newImports);
+        }
+
+    public void setNewImports(List<String> newImports) {
             this.newImports = newImports;
         }
 
