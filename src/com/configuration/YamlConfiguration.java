@@ -31,6 +31,7 @@ public class YamlConfiguration {
         TypeDescription ruleDescription = new TypeDescription(TransformerRuleConfiguration.class);
         constructor.addTypeDescription( ruleDescription );
         loadImports( ruleDescription );
+        loadOutputLocation( ruleDescription );
         loadClassIdentifier(ruleDescription);
         Yaml yaml = new Yaml(constructor);
         try {
