@@ -18,27 +18,41 @@ public class YamlConfiguration {
     Yaml yaml = new Yaml();
     Map<String, ArrayList> config;
 
-    TransformerRuleConfiguration rules;
+    static TransformerRuleConfiguration rules;
 
     public static final String CONFIG_FILE = "D:\\IdeaProjects\\Antlr\\config.yml";
 
-    public YamlConfiguration() throws FileNotFoundException {
+    private YamlConfiguration(){
 
-         Constructor constructor = new Constructor(TransformerRuleConfiguration.class);
-         TypeDescription ruleDescription = new TypeDescription(TransformerRuleConfiguration.class);
-         ruleDescription.putListPropertyType("oldImports", String.class);
-         ruleDescription.putListPropertyType("newImports", String.class);
-         ruleDescription.putListPropertyType("classIdentifier ", String.class);
-         constructor.addTypeDescription( ruleDescription );
-         Yaml yaml = new Yaml(constructor);
-         rules =
-                 (TransformerRuleConfiguration) yaml.loadAs(new FileReader(CONFIG_FILE),TransformerRuleConfiguration.class);
-         System.out.println( " Old imports are [ " + rules.getOldImports() + "]");
     }
 
-    public TransformerRuleConfiguration getTransformerRuleConfiguration(){
+    public static TransformerRuleConfiguration getDefaultTransformerRuleConfiguration(){
+        Constructor constructor = new Constructor(TransformerRuleConfiguration.class);
+        TypeDescription ruleDescription = new TypeDescription(TransformerRuleConfiguration.class);
+        constructor.addTypeDescription( ruleDescription );
+        loadImports( ruleDescription );
+        loadClassIdentifier(ruleDescription);
+        Yaml yaml = new Yaml(constructor);
+        try {
+            rules =
+                    (TransformerRuleConfiguration) yaml.loadAs(new FileReader(CONFIG_FILE), TransformerRuleConfiguration.class);
+        }catch( final FileNotFoundException fnfex ){
+            throw new Error(fnfex);
+        }
         return rules;
     }
 
+    private static void loadOutputLocation( TypeDescription ruleDescription ) {
+        ruleDescription.putListPropertyType("outputDir", String.class);
+    }
+
+    private static void loadImports( TypeDescription ruleDescription ){
+        ruleDescription.putListPropertyType("oldImports", String.class);
+        ruleDescription.putListPropertyType("newImports", String.class);
+    }
+
+    private static void loadClassIdentifier( TypeDescription ruleDescription ){
+        ruleDescription.putListPropertyType("classIdentifier ", String.class);
+    }
 
 }

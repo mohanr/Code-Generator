@@ -1,37 +1,49 @@
 package com.transformer;
 
+import com.configuration.TransformerRuleConfiguration;
+import com.configuration.YamlConfiguration;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.misc.Interval;
-import test.JavaBaseListener;
-import test.JavaParser;
+import com.antlr.framework.JavaBaseListener;
+import com.antlr.framework.JavaParser;
 
 import java.io.*;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Mohan Radhakrishnan on 6/21/2016.
  */
 public class CodePrinter {
 
-    BufferedWriter fout;
+    private String classIdentifier = "DEFAULT";
+
+    private BufferedWriter fout;
 
     private List<Interval> intervals;
 
     private CharStream tokenStream;
 
-    public CodePrinter(){
+    private TransformerRuleConfiguration rules = YamlConfiguration.getDefaultTransformerRuleConfiguration();
+
+
+    public CodePrinter( ){
         try {
-            fout = new BufferedWriter( new FileWriter("D:\\IdeaProjects\\Antlr\\LoginController.java") );
+            rules.getOptionalClassIdentifier().ifPresent( a -> {this.classIdentifier = a;});
+            if (rules.getOptionalOutputDir().isPresent()){
+                fout = new BufferedWriter( new FileWriter(rules.getOptionalOutputDir().get() + classIdentifier + ".java") );
+            }
         } catch (IOException e) {
             System.out.println("IOException");
         }
-
     }
+
 
     public CodePrinter( CharStream tokenStream ){
         this();

@@ -4,8 +4,8 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import test.JavaLexer;
-import test.JavaParser;
+import com.antlr.framework.JavaLexer;
+import com.antlr.framework.JavaParser;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,7 +30,7 @@ public class Transformer  {
 
         /* Remove Struts import declarations*/
         /* Change class name to something else */
-        Regenerator rewriters = new Regenerator( stream );
+        ConfiguredRuleRegenerator rewriters = new ConfiguredRuleRegenerator( stream );
         jp.addParseListener( rewriters );
 
         ParseTreeWalker walker = new ParseTreeWalker();
