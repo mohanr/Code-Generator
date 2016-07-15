@@ -26,7 +26,7 @@ import java.util.stream.Stream;
  */
 public class ConfiguredRuleRegenerator extends JavaBaseListener {
 
-        private final CodePrinter printer;
+        private CodePrinter printer;
 
         private TokenStream tokens;
 
@@ -43,6 +43,8 @@ public class ConfiguredRuleRegenerator extends JavaBaseListener {
         ConcurrentLinkedQueue<List<Token>> hiddenWhiteSpaceTokens = new ConcurrentLinkedQueue<>();
         ConcurrentLinkedQueue<List<Token>> hiddenMethodCommentTokens = new ConcurrentLinkedQueue<>();
 
+        private Optional<String> outputClassIdentifier;
+
         public List<Interval> getIntervals() {
             return intervals;
         }
@@ -58,16 +60,21 @@ public class ConfiguredRuleRegenerator extends JavaBaseListener {
 
             this.tokens = tokens;
 
-            printer = new CodePrinter( tokens.getTokenSource().getInputStream());
 
         }
 
         @Override
         public void enterCompilationUnit(JavaParser.CompilationUnitContext ctx) {
 
-
-            classModifier =
+            outputClassIdentifier =
             ctx.typeDeclaration().stream()
+                    .map(type ->
+                                type.classDeclaration().Identifier().getText()).findFirst();
+
+            printer = new CodePrinter( tokens.getTokenSource().getInputStream(),
+                                        outputClassIdentifier);
+
+            classModifier = ctx.typeDeclaration().stream()
                     .flatMap(type -> type.classOrInterfaceModifier().stream())
                     .map((f) -> f.getText()).findFirst();
 

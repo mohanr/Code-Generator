@@ -12,6 +12,7 @@ import com.antlr.framework.JavaParser;
 
 import java.io.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -30,25 +31,25 @@ public class CodePrinter {
 
     private CharStream tokenStream;
 
+    private Optional<String> outputClassIdentifier;
+
     private TransformerRuleConfiguration rules = YamlConfiguration.getDefaultTransformerRuleConfiguration();
 
 
-    public CodePrinter( ){
+    public CodePrinter(CharStream inputStream, Optional<String> outputClassIdentifier){
+        this.tokenStream = inputStream;
         try {
             rules.getOptionalClassIdentifier().ifPresent( a -> {this.classIdentifier = a;});
             if (rules.getOptionalOutputDir().isPresent()){
-                fout = new BufferedWriter( new FileWriter(rules.getOptionalOutputDir().get() + classIdentifier + ".java") );
+                fout = new BufferedWriter( new FileWriter( rules.getOptionalOutputDir().get() +
+                                                            ( outputClassIdentifier.isPresent() ?
+                                                                outputClassIdentifier.get() : classIdentifier ) + ".java") );
             }
         } catch (IOException e) {
             System.out.println("IOException");
         }
     }
 
-
-    public CodePrinter( CharStream tokenStream ){
-        this();
-        this.tokenStream = tokenStream;
-    }
 
 
     public void write( List<Interval> intervals) {
@@ -109,4 +110,9 @@ public class CodePrinter {
             }
         }
     }
+
+    public void setOutputClassIdentifier(Optional<String> outputClassIdentifier) {
+        this.outputClassIdentifier = outputClassIdentifier;
+    }
+
 }
