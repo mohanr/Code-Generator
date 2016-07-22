@@ -1,5 +1,27 @@
 // Generated from D:/IdeaProjects/Antlr\Java.g4 by ANTLR 4.5.1
 package com.antlr.framework;
+
+
+    import org.neo4j.graphdb.*;
+	import org.neo4j.graphdb.factory.GraphDatabaseSettings;
+    import org.neo4j.graphdb.index.Index;
+    import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+
+	import java.io.File;
+	import java.util.*;
+
+	import org.antlr.v4.runtime.atn.*;
+    import org.antlr.v4.runtime.dfa.DFA;
+    import org.antlr.v4.runtime.*;
+    import org.antlr.v4.runtime.misc.*;
+    import org.antlr.v4.runtime.tree.*;
+	import org.neo4j.helpers.collection.Iterators;
+
+	import java.util.Iterator;
+	import java.util.stream.Stream;
+	import java.util.stream.Collectors;
+	import java.util.function.Consumer;
+
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;

@@ -111,8 +111,4 @@ public class CodePrinter {
         }
     }
 
-    public void setOutputClassIdentifier(Optional<String> outputClassIdentifier) {
-        this.outputClassIdentifier = outputClassIdentifier;
-    }
-
 }

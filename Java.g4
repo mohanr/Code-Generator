@@ -40,6 +40,85 @@
  */
 grammar Java;
 
+@header {
+
+    import org.neo4j.graphdb.*;
+	import org.neo4j.graphdb.factory.GraphDatabaseSettings;
+    import org.neo4j.graphdb.index.Index;
+    import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+
+	import java.io.File;
+	import java.util.*;
+
+	import org.antlr.v4.runtime.atn.*;
+    import org.antlr.v4.runtime.dfa.DFA;
+    import org.antlr.v4.runtime.*;
+    import org.antlr.v4.runtime.misc.*;
+    import org.antlr.v4.runtime.tree.*;
+	import org.neo4j.helpers.collection.Iterators;
+
+	import java.util.Iterator;
+	import java.util.stream.Stream;
+	import java.util.stream.Collectors;
+	import java.util.function.Consumer;
+}
+@parser::members {
+
+		private File file = new File("D:\\IdeaProjects\\Antlr\\neo4j\\antlr.db");
+
+		GraphDatabaseSettings.BoltConnector bolt = GraphDatabaseSettings.boltConnector( "0" );
+
+	    private final GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder( file ).
+	                setConfig( GraphDatabaseSettings.node_keys_indexable, "type,name" ).
+	                setConfig( GraphDatabaseSettings.relationship_keys_indexable, "IMPLEMENTS" ).
+	                setConfig( GraphDatabaseSettings.node_auto_indexing, "true" ).
+	                setConfig( bolt.enabled, "true" ).
+                    setConfig( bolt.address, "localhost:7447" ).
+	                setConfig( GraphDatabaseSettings.relationship_auto_indexing, "true" ).
+				newGraphDatabase();
+	    private Map<Long, Tree> id2Tree = new HashMap<Long, Tree>();
+
+	    private Stack<Node> clazzes = new Stack<Node>();
+
+        public final ResourceIterable<Label> getAllLabels() {
+            ResourceIterable<Label> labels = null;
+            try( Transaction transaction = db.beginTx() ){
+                labels = db.getAllLabels();
+                transaction.success();
+            }
+            return labels;
+        }
+
+        public final ResourceIterable<Node> getAllNodes() {
+            ResourceIterable<Node> nodes = null;
+            try( Transaction transaction = db.beginTx() ){
+                nodes = db.getAllNodes();
+                transaction.success();
+            }
+            return nodes;
+        }
+
+        private void transactional( Runnable code ){
+            try( Transaction transaction = db.beginTx() ){
+                code.run();
+                transaction.success();
+            }
+        }
+
+        /*
+         * Pass behaviour and the Node labels
+        */
+        public void transactionalPrint( ResourceIterable<Label> labels, Consumer<Label> consumer ){
+            try( Transaction transaction = db.beginTx() ){
+                labels.forEach( consumer );
+                transaction.success();
+            }
+        }
+
+	    private enum Rels implements RelationshipType {
+	        IMPLEMENTS
+	    }
+}
 // starting point for parsing a java file
 compilationUnit
     :   packageDeclaration? importDeclaration* typeDeclaration* EOF
@@ -89,6 +168,20 @@ variableModifier
 
 classDeclaration
     :   'class' Identifier typeParameters?
+    {
+        Transaction transaction = db.beginTx();
+        try{
+
+            Node node = db.createNode();
+            node.setProperty("type", "class");
+            node.setProperty("name", $Identifier.text);
+            clazzes.push(node);
+            transaction.success();
+        } finally{
+                 transaction.close();
+        }
+
+    }
         ('extends' type)?
         ('implements' typeList)?
         classBody
@@ -147,6 +240,7 @@ classBodyDeclaration
 
 memberDeclaration
     :   methodDeclaration
+
     |   genericMethodDeclaration
     |   fieldDeclaration
     |   constructorDeclaration
@@ -164,6 +258,21 @@ memberDeclaration
  */
 methodDeclaration
     :   (type|'void') Identifier formalParameters ('[' ']')*
+    {
+               Transaction transaction = db.beginTx();
+        try {
+                Node node = db.createNode();
+                node.setProperty("type", "method");
+                node.setProperty("name", $Identifier.text);
+                Node cls = clazzes.peek();
+                cls.createRelationshipTo(node, Rels.IMPLEMENTS);
+                System.out.println( cls + " created");
+                transaction.success();
+
+        }finally{
+                 transaction.close();
+        }
+    }
         ('throws' qualifiedNameList)?
         (   methodBody
         |   ';'
