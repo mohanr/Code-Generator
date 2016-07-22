@@ -1,6 +1,6 @@
 # Code Transformer in incubation
 
-## An attempt to refactor code from the Antlr ParseTree.(e.g) Transform Struts code to Spring code. 
+## An attempt to refactor code from the Antlr ParseTree.
 
 ### Option 1
 
