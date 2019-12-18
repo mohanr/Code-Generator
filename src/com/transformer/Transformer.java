@@ -28,7 +28,7 @@ public class Transformer  {
 
     private void writeModifiedTree() throws IOException {
 
-        ANTLRInputStream ais = new ANTLRInputStream( new FileInputStream("D:/Nationwide/DGS/DGS-TPI/DGS-TPI/thirdPartyInquiryWEB/src/main/java/com/nationwide/pc/is/tpi/web/action/LoginAction.java"));
+        ANTLRInputStream ais = new ANTLRInputStream( new FileInputStream("D:/LoginAction.java"));
         JavaLexer jl = new JavaLexer(ais);
         CommonTokenStream stream = new CommonTokenStream(jl);
         JavaParser jp = new JavaParser( stream);
